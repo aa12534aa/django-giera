@@ -1,0 +1,38 @@
+{% extends 'main.html' %}
+{% block content %}
+<body>
+    <div>
+        hello 
+        {% if user.is_authenticated %}
+        {{user.username}}
+        {% else %}
+        unknown
+        {% endif %}
+    </div>
+    <form method="post" action="{% url 'create-lobby' %}">
+        {% csrf_token %}
+        <button type="submit">Create Lobby</button>
+    </form>
+
+    <form id="joinLobbyForm">
+        <label for="joinLobby">lobby id:</label>
+        <input type="number" name="joinLobby" id="joinLobby" required>
+        <button type="submit">Join Lobby</button>
+    </form>
+
+    {% for lobby in lobbies %}
+    <div>lobby: {{lobby.id}} isActive: {{lobby.isActive}}</div>
+    {% endfor %}
+
+    <script>
+        console.log(lobbies)
+        document.getElementById('joinLobbyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const lobbyId = document.getElementById('joinLobby').value;
+            window.location.href = `/lobby/${lobbyId.toString()}`;
+        })
+
+    </script>
+</body>
+{% endblock %}

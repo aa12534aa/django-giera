@@ -1,0 +1,32 @@
+<div>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    {% if pageType == 'login' %}
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            <label for="email"><b>Email</b></label>
+            <input type="text" placeholder="Enter Email" name="email" required>
+
+            <label for="psw"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" required>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <a href="{% url 'register-page' %}">register</a>
+    {% else %}
+    <div>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+        <input type="submit" value="Register">
+    </form>
+    </div>
+    {% endif %}
+</div>

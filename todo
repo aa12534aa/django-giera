@@ -1,0 +1,37 @@
+do dodania:
+#-stworzenie basic frontendu do logowania i rejestracji
+#-możliwość logowania i tworzenia konta
+#-frontend do tworzenia lobby, dołączania do lobby i samego lobby
+#-tworzenie lobby i ustawianie użytkownika hostem (wszystko oparte na websockecie)
+#-dołączanie użytkowników o lobby
+#-po wyjściu usuwanie użytkowników z lobby
+#-po wyjściu usuwanie host z lobby (lobby się usuwa)
+#-zmień nazwę projektu
+#-przeniesienie js do folder static
+#-przy tworzeniu użytkownika gracz musi podać unikalny name (w lobby wyświetla się username użytkownika)
+#-przeniesienie użytkowników po odpaleniu gry
+#-dodać w tabeli lobby czy jest aktywne
+#-po rozpoczęciu gry gracze muszą się połączyć z websocketem
+#-problem lobby i gracze usuwają sie po wystartowaniu gry
+#-dodaj czas trwania gry
+#-jeżeli czas się skończy wszyscy wracają do lobby
+#-w views.py rozbij funkcje joinLobby na dwie joinLobby, createLobby
+#-kiedy użytkownik, który stworzył lobby odświeża strone ma być w tym samym lobby
+#-jeżeli gracz próbuję dołączyć do nieistniejącego lobby, to go cofa
+#-po wyjściu z gry gracz z lobby się usuwa
+#-po skończeniu gry playerisplaying i lobbyisactive ustawiamy na false
+#-jeżeli wyjdzie host to gra dalej trwa, ale po powrocie lobby się usuwa
+#-dodaj guzik wyjścia z lobby
+#-zmień, że kiedy wychodzi host, to lobby się nie zamyka tylko hosta dostaje jakaś inna osoba
+#-dodaj, że przy hosiecie jest jakis napis
+#-dodaj, że lobby się zamyka, kiedy nie ma żadnego gracza w lobby
+#-zmień, że w game też działa ta sama logika, że nie usuwamy lobby
+#-zrób, że kiedy użytkownik staję się nowym hostem, to może wystartować grę
+#-możliwość usuwania graczy przez hosta
+#-kiedy ostatni użytkownik odświeży lobby ma zostać przeniesiony do home
+#-kiedy host odświeży strone, to nie może mieć guzika start game
+#-dodaj wyświetlanie listy lobby w home
+-dodaj do wyświetlanych lobby w home możliwość dołączenia do niego
+
+-jakaś logika gry
+-dodaj pole punktów gracza

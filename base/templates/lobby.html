@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<body>
+    <a href="{% url '' %}">Go Home</a>
+    <h2>Lobby: {{lobbyId}}</h2>
+    <div id="controls"></div>
+
+    <ul id="players"></ul>
+    <script>
+        const lobbyId = "{{ lobbyId }}";
+        const userId = "{{ request.user.id }}";
+        let isHost = "{{ request.user.host }}";
+    </script>
+    <script src="{% static 'lobby.js' %}"></script>
+</body>
+{% endblock %}
