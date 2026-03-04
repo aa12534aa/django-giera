@@ -21,11 +21,14 @@
     </form>
 
     {% for lobby in lobbies %}
-    <div>lobby: {{lobby.id}} isActive: {{lobby.isActive}}</div>
+    <div style="display: flex; justify-content: space-between; width: 500px; border: solid 1px;">
+        <div>lobby: {{lobby.id}}</div>
+        <div>isActive: {{lobby.isActive}}</div>
+        <a href="{% url 'join-lobby' lobby.id %}">Join Lobby</a>
+    </div>
     {% endfor %}
 
     <script>
-        console.log(lobbies)
         document.getElementById('joinLobbyForm').addEventListener('submit', function(e) {
             e.preventDefault();
 

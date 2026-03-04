@@ -53,6 +53,15 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 
     async def getAllPlayers(self, event):
         players, host = await database_sync_to_async(functions.getPlayers)(self.lobbyId)
+        lobby = await database_sync_to_async(functions.getLobby)(self.lobbyId)
+        if lobby.isActive:
+            await self.send(text_data=json.dumps(
+                {'type': 'gameIsOn'}
+            ))
+        else:
+            await self.send(text_data=json.dumps(
+                {'type': 'gameIsEnded'}
+            ))
 
         await self.send(text_data=json.dumps(
             {

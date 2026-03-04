@@ -31,7 +31,8 @@ do dodania:
 #-kiedy ostatni użytkownik odświeży lobby ma zostać przeniesiony do home
 #-kiedy host odświeży strone, to nie może mieć guzika start game
 #-dodaj wyświetlanie listy lobby w home
--dodaj do wyświetlanych lobby w home możliwość dołączenia do niego
+#-dodaj do wyświetlanych lobby w home możliwość dołączenia do niego
+    -dodaj, że kiedy użytkownik dołącza do aktywnego lobby, to pokazuje, że lobby jest aktywne
 
 -jakaś logika gry
 -dodaj pole punktów gracza

@@ -31,7 +31,7 @@ def addPlayerToLobby(user, lobbyId):
 
 def isPlayerInLobby(user, lobbyId):
     try:
-        print(Player.objects.get(user=user, lobby=lobbyId))
+        Player.objects.get(user=user, lobby=lobbyId)
         return True
     except:
         return False

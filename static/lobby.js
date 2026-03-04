@@ -66,6 +66,10 @@ socket.onmessage = function(e) {
         if (data.newHostId === parseInt(userId)) {
             showStartButton();
         }
+    } else if (data.type === 'gameIsOn') {
+        document.getElementById('isGameOn').innerText = 'Game is on, wait till the end';
+    } else if (data.type === 'gameIsEnded'){
+        document.getElementById('isGameOn').innerText = '';
     }
 };
 
