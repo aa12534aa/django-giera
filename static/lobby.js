@@ -21,7 +21,6 @@ socket.onmessage = function(e) {
         playersList.innerHTML = "";
         if (data.host === parseInt(userId)) {
             data.players.forEach(player => {
-                console.log(player, player.id, player.username, player.isHost)
                 const li = document.createElement("li");
                 if (player.isHost) {
                     li.innerText = 'host: ' + player.username;

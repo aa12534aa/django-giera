@@ -1,19 +1,20 @@
+logowanie/rejestracja, home i lobby
 do dodania:
 #-stworzenie basic frontendu do logowania i rejestracji
 #-możliwość logowania i tworzenia konta
 #-frontend do tworzenia lobby, dołączania do lobby i samego lobby
 #-tworzenie lobby i ustawianie użytkownika hostem (wszystko oparte na websockecie)
-#-dołączanie użytkowników o lobby
+#-dołączanie użytkowników do lobby
 #-po wyjściu usuwanie użytkowników z lobby
 #-po wyjściu usuwanie host z lobby (lobby się usuwa)
 #-zmień nazwę projektu
 #-przeniesienie js do folder static
 #-przy tworzeniu użytkownika gracz musi podać unikalny name (w lobby wyświetla się username użytkownika)
 #-przeniesienie użytkowników po odpaleniu gry
-#-dodać w tabeli lobby czy jest aktywne
+#-w tabeli lobby czy jest aktywne
 #-po rozpoczęciu gry gracze muszą się połączyć z websocketem
 #-problem lobby i gracze usuwają sie po wystartowaniu gry
-#-dodaj czas trwania gry
+#-czas trwania gry
 #-jeżeli czas się skończy wszyscy wracają do lobby
 #-w views.py rozbij funkcje joinLobby na dwie joinLobby, createLobby
 #-kiedy użytkownik, który stworzył lobby odświeża strone ma być w tym samym lobby
@@ -21,18 +22,28 @@ do dodania:
 #-po wyjściu z gry gracz z lobby się usuwa
 #-po skończeniu gry playerisplaying i lobbyisactive ustawiamy na false
 #-jeżeli wyjdzie host to gra dalej trwa, ale po powrocie lobby się usuwa
-#-dodaj guzik wyjścia z lobby
-#-zmień, że kiedy wychodzi host, to lobby się nie zamyka tylko hosta dostaje jakaś inna osoba
-#-dodaj, że przy hosiecie jest jakis napis
-#-dodaj, że lobby się zamyka, kiedy nie ma żadnego gracza w lobby
-#-zmień, że w game też działa ta sama logika, że nie usuwamy lobby
+#-guzik wyjścia z lobby
+#-kiedy wychodzi host, to lobby się nie zamyka tylko hosta dostaje jakaś inna osoba
+#-przy hosiecie jest jakis napis
+#-lobby się zamyka, kiedy nie ma żadnego gracza w lobby
+#-w game też działa ta sama logika, że nie usuwamy lobby
 #-zrób, że kiedy użytkownik staję się nowym hostem, to może wystartować grę
 #-możliwość usuwania graczy przez hosta
 #-kiedy ostatni użytkownik odświeży lobby ma zostać przeniesiony do home
 #-kiedy host odświeży strone, to nie może mieć guzika start game
-#-dodaj wyświetlanie listy lobby w home
-#-dodaj do wyświetlanych lobby w home możliwość dołączenia do niego
-    -dodaj, że kiedy użytkownik dołącza do aktywnego lobby, to pokazuje, że lobby jest aktywne
+#-wyświetlanie listy lobby w home
+#-do wyświetlanych lobby w home możliwość dołączenia do niego
+#-kiedy użytkownik dołącza do aktywnego lobby, to pokazuje, że lobby jest aktywne
+-komentarze do całego kodu
+-pole punktów gracza w home
+-w tabeli ile ogólnie punktów ma gracz
 
--jakaś logika gry
--dodaj pole punktów gracza
+logika gry - gra polega na tym, że gracze mają jakieś słowa, i muszą ich jak najwięcej wpisać z klawiatury w danym czasie
+do dodania:
+#-pobranie listy słów możliwych do wyświetlenia
+#-wyświetlanie jakiś słów dla graczy
+-host może wybierać czas trwania gry
+-pole, gdzie gracz będzie wpisywał słowa
+-zmieniaj napisane słowo na zielono
+-tabelke graczy ile słów już napisali
+-po zakończeniu gracze przechodzą do podsumowania wyników

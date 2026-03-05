@@ -13,8 +13,12 @@ socket.onopen = function() {
 
 socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    console.log(data.type)
-    if (data.type === 'timer'){
+    if (data.type === 'wordsForGame') {
+        const words = document.getElementById('words');
+        data.wordsList.forEach(word => {
+            words.textContent += word + ' ';
+        });
+    } else if (data.type === 'timer'){
         document.getElementById('timer').innerHTML = data.time;
     } else if (data.type === 'endGame') {
         window.location.href = `http://127.0.0.1:8000/lobby/${data.lobbyId.toString()}`;

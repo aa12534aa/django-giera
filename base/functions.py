@@ -70,9 +70,11 @@ def deactivateLobby(lobbyId):
     lobby.isActive = False
     lobby.save()
 
-def getLobby(lobbyId):
-    lobby = Lobby.objects.get(id=lobbyId)
-    return lobby
+def generateWords():
+    with open("E:\\praca\\django\\giera\\base\\words-base\\The Oxford 5000.txt", "r") as f:
+        words = f.read()
+    wordsList = words.split('\n')[:-1]
+    return wordsList[:5]
 
 def endGame(user, lobbId):
     try:
@@ -87,6 +89,10 @@ def endGame(user, lobbId):
 
 
 # Lobby and Game functions
+def getLobby(lobbyId):
+    lobby = Lobby.objects.get(id=lobbyId)
+    return lobby
+
 def removePlayer(user, lobbyId):
     try:
         lobby = Lobby.objects.get(id=lobbyId)

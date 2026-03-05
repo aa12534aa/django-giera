@@ -4,10 +4,14 @@
 <body>
     <a href="{% url '' %}">Go Home</a>
     <h1>LobbyId: {{lobbyId}}</h1>
+
     <div style="display: flex;">
         <h2>Timer: </h2>
         <h2 id="timer"></h2>
     </div>
+
+    <ui id="words"></ui>
+
     <script>
         const lobbyId = "{{ lobbyId }}";
     </script>

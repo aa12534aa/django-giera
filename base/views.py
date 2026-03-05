@@ -12,6 +12,7 @@ def index(request):
 
 
 def home(request):
+    functions.generateWords()
     lobbies = functions.getAllLobbies()
     context = {'lobbies': lobbies}
     return render(request, 'home.html', context) 

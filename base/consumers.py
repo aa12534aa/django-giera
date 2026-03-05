@@ -137,7 +137,23 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
         elif value == 'startTimer' and self.user.host is not None and str(self.user.host) == self.lobbyId:
+            wordsList = await database_sync_to_async(functions.generateWords)()
+            await self.channel_layer.group_send(
+                f'game{self.lobbyId}',
+                {
+                    'type': 'prepareWords',
+                    'wordsList': wordsList
+                }
+            )
             asyncio.create_task(self.startTimer())
+
+    async def prepareWords(self, event):
+        await self.send(text_data=json.dumps(
+            {
+                'type': 'wordsForGame',
+                'wordsList': event['wordsList'] 
+            }
+        ))
 
     async def startTimer(self):
         gameTimer = 30
