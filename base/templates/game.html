@@ -10,7 +10,12 @@
         <h2 id="timer"></h2>
     </div>
 
-    <ui id="words"></ui>
+    <form id="playerWordForm">
+        <input type="text" id="playerWord">
+    </form>
+
+    <div id="words" style="width: calc(100% - 400px); margin: 0 auto; display: flex; flex-wrap: wrap;">
+    </div>
 
     <script>
         const lobbyId = "{{ lobbyId }}";

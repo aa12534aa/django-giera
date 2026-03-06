@@ -36,14 +36,17 @@ do dodania:
 #-kiedy użytkownik dołącza do aktywnego lobby, to pokazuje, że lobby jest aktywne
 -komentarze do całego kodu
 -pole punktów gracza w home
--w tabeli ile ogólnie punktów ma gracz
+-w tabeli player ile punktów ma gracz
 
 logika gry - gra polega na tym, że gracze mają jakieś słowa, i muszą ich jak najwięcej wpisać z klawiatury w danym czasie
 do dodania:
 #-pobranie listy słów możliwych do wyświetlenia
 #-wyświetlanie jakiś słów dla graczy
+#-zmień, aby słowa się losowały i jakoś wyglądały na frontendzie
+#-pole, gdzie gracz będzie wpisywał słowa
+#-tabelke graczy ile słów już napisali oraz dodaj w tabeli players score
+#-kolorownie poprawnie napisanego słowa na zielono
+-wyświetlanie wyniku gracza
+-wyświetlanie wyników innych graczy
 -host może wybierać czas trwania gry
--pole, gdzie gracz będzie wpisywał słowa
--zmieniaj napisane słowo na zielono
--tabelke graczy ile słów już napisali
 -po zakończeniu gracze przechodzą do podsumowania wyników

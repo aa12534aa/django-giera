@@ -20,3 +20,4 @@ class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     lobby = models.ForeignKey(Lobby, on_delete=models.CASCADE)
     isPlaying = models.BooleanField(default=False)
+    score = models.IntegerField(default=0)

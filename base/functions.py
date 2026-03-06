@@ -1,4 +1,5 @@
 from .models import User, Lobby, Player
+import random
 
 # views
 def createLobby(user):
@@ -70,11 +71,21 @@ def deactivateLobby(lobbyId):
     lobby.isActive = False
     lobby.save()
 
+def checkWord(user, lobbyId, word, wordsList):
+    player = Player.objects.get(user=user, lobby=lobbyId)
+    wordId = player.score
+    if wordsList[wordId] == word:
+        player.score += 1
+        player.save()
+        return [True, str(wordId)]
+    else:
+        return [False, str(wordId)]
+
 def generateWords():
     with open("E:\\praca\\django\\giera\\base\\words-base\\The Oxford 5000.txt", "r") as f:
         words = f.read()
-    wordsList = words.split('\n')[:-1]
-    return wordsList[:5]
+    wordsList = random.choices(words.split('\n')[:-1], k=200)
+    return wordsList
 
 def endGame(user, lobbId):
     try:
