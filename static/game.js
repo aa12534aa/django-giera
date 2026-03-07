@@ -12,7 +12,32 @@ socket.onopen = function() {
 
 socket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    if (data.type === 'wordsForGame') {
+    if (data.type === 'createScoreTable') {
+        const scoreTable = document.getElementById('scoreTable');
+        scoreTable.innerHTML = '';
+        data.playersAndScore.forEach(player => {
+            console.log(player)
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.gap = "10px";
+
+            const playerName = document.createElement("h4");
+            playerName.innerText = player.username + ':';
+
+            const playerScore = document.createElement("h4");
+            playerScore.id = 'player' + player.username;
+            playerScore.innerText = '0';
+
+            row.appendChild(playerName);
+            row.appendChild(playerScore);
+
+            scoreTable.appendChild(row);
+        })
+    } else if (data.type === 'updateScoreTable') {
+        console.log(data.player);
+        const playerToUpdate = document.getElementById('player' + data.player);
+        playerToUpdate.innerText = parseInt(playerToUpdate.innerText) + 1;
+    } else if (data.type === 'wordsForGame') {
         const words = document.getElementById('words');
         words.innerHTML = '';
         let wordId = 0;

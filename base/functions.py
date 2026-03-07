@@ -54,6 +54,13 @@ def getPlayers(lobbyId):
 
 
 # Game functions
+def getPlayersForGame(lobbyId):
+    players = Player.objects.filter(lobby=lobbyId)
+    playersAndScore = []
+    for p in players:
+        playersAndScore.append({'username': p.user.username, 'score': p.score})
+    return playersAndScore
+
 def startGame(user, lobbyId):
     lobby = Lobby.objects.get(id=lobbyId)
     player = Player.objects.get(user=user, lobby=lobby)
@@ -95,6 +102,7 @@ def endGame(user, lobbId):
     if lobby is not None:
         player = Player.objects.get(user=user, lobby=lobby)
         player.isPlaying = False
+        player.score = 0
         player.save()
         return lobby    
 

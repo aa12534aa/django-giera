@@ -131,9 +131,18 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         if value == 'prepareGame':
             await database_sync_to_async(functions.startGame)(self.user, self.lobbyId)
+            playersAndScore = await database_sync_to_async(functions.getPlayersForGame)(self.lobbyId)
 
             await self.channel_layer.group_add(
                 f'game{self.lobbyId}', self.channel_name
+            )
+
+            await self.channel_layer.group_send(
+                f'game{self.lobbyId}',
+                {
+                    'type': 'createScoreTable',
+                    'playersAndScore': playersAndScore
+                }
             )
 
         elif value == 'startTimer' and self.user.host is not None and str(self.user.host) == self.lobbyId:
@@ -157,10 +166,33 @@ class GameConsumer(AsyncWebsocketConsumer):
                         'wordId': wordId
                     }
                 ))
-            else:
-                print('xd')
+
+                await self.channel_layer.group_send(
+                    f'game{self.lobbyId}',
+                    {
+                        'type': 'updateScoreTable',
+                        'player': self.user.username
+                    }
+                )
+
+    async def createScoreTable(self, event):
+        await self.send(text_data=json.dumps(
+            {
+                'type': 'createScoreTable',
+                'playersAndScore': event['playersAndScore']
+            }
+        ))
+
+    async def updateScoreTable(self, event):
+        await self.send(text_data=json.dumps(
+            {
+                'type': 'updateScoreTable',
+                'player': event['player']
+            }
+        ))
 
     async def prepareWords(self, event):
+        self.wordsList = event['wordsList']
         await self.send(text_data=json.dumps(
             {
                 'type': 'wordsForGame',
