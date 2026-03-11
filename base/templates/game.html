@@ -2,20 +2,27 @@
 {% load static %}
 {% block content %}
 <body>
-    <a href="{% url '' %}">Go Home</a>
-    <h1>LobbyId: {{lobbyId}}</h1>
+    <div style="display: flex; justify-content: space-between; margin-right: 200px;">
+        <div>
+            <a href="{% url '' %}">Go Home</a>
+            <h1>LobbyId: {{lobbyId}}</h1>
 
-    <div style="display: flex;">
-        <h2>Timer: </h2>
-        <h2 id="timer"></h2>
+            <div style="display: flex;">
+                <h2>Timer: </h2>
+                <h2 id="timer"></h2>
+            </div>
+        </div>
+        
+        <div>
+            <h2>Score Table</h2>
+            <div id="scoreTable"></div>
+        </div>
     </div>
-    <div style="display: flex; justify-content: space-around;">
-        <form id="playerWordForm">
-            <input type="text" id="playerWord">
-        </form>
 
-        <dicv id="scoreTable"></div>
-    </div>
+    <form id="playerWordForm" style="margin-left: 200px;">
+        <label for="playerWord">Type next word</label>
+        <input type="text" id="playerWord" name="playerWord">
+    </form>
 
     <div id="words" style="width: calc(100% - 400px); margin: 0 auto; display: flex; flex-wrap: wrap;">
     </div>

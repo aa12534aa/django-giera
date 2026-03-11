@@ -6,17 +6,12 @@ from django.contrib import messages
 from . import functions
 
 
-def index(request):
-    return render(request, 'index.html')
-
-
-
 def home(request):
-    functions.generateWords()
     lobbies = functions.getAllLobbies()
     context = {'lobbies': lobbies}
     return render(request, 'home.html', context) 
 
+# login and register page has the same html, so in context we send information about it
 def loginPage(request):
     pageType = 'login'
     if request.method == 'POST':

@@ -1,8 +1,9 @@
 from .models import User, Lobby, Player
 import random
 
-# views
+## views
 def createLobby(user):
+    """ create lobby and set the host """
     lobby = Lobby.objects.create()
     Player.objects.create(user=user, lobby=lobby)
     user.host = lobby.id
@@ -10,34 +11,38 @@ def createLobby(user):
     return lobby.id
 
 def lobbyExists(lobbyId):
+    """ check if lobby with given ID exists """
     try:
         Lobby.objects.get(id=lobbyId)
         return True
-    except:
+    except Lobby.DoesNotExists:
         return False
-    
+
 def getAllLobbies():
+    """ get lobbies to display them on the home page """
     lobbies = Lobby.objects.all()
     lobbyList = []
     for lobby in lobbies:
         lobbyList.append({'id': lobby.id, 'isActive': lobby.isActive})
     return lobbyList
 
-
-# Lobby functions
 def addPlayerToLobby(user, lobbyId):
     lobby = Lobby.objects.get(id=lobbyId)
     player, _ = Player.objects.get_or_create(user=user, lobby=lobby)
     return player
 
+
+## Lobby functions
 def isPlayerInLobby(user, lobbyId):
+    """ check if player with given user and lobby exists """
     try:
         Player.objects.get(user=user, lobby=lobbyId)
         return True
     except:
         return False
-
+    
 def getPlayers(lobbyId):
+    """ get all players from lobby and return them """
     if not lobbyExists(lobbyId):
         return [[], '']
     lobby = Lobby.objects.get(id=lobbyId)
@@ -45,23 +50,17 @@ def getPlayers(lobbyId):
     playersArray = []
     host = None
     for p in players:
+        # host
         if p.user.host is not None and str(p.user.host) == lobbyId:
             playersArray.append({'username': p.user.username, 'id': p.user.id, 'isHost': True})
             host = p.user.id
+        # normal player
         else:
             playersArray.append({'username': p.user.username, 'id': p.user.id, 'isHost': False})
     return [playersArray, host]
 
-
-# Game functions
-def getPlayersForGame(lobbyId):
-    players = Player.objects.filter(lobby=lobbyId)
-    playersAndScore = []
-    for p in players:
-        playersAndScore.append({'username': p.user.username, 'score': p.score})
-    return playersAndScore
-
 def startGame(user, lobbyId):
+    """ start game and change lobby and players states to active (all players use this function) """
     lobby = Lobby.objects.get(id=lobbyId)
     player = Player.objects.get(user=user, lobby=lobby)
     player.isPlaying = True
@@ -70,7 +69,18 @@ def startGame(user, lobbyId):
         lobby.isActive = True
         lobby.save()
 
+
+## Game functions
+def getPlayersForGame(lobbyId):
+    """ get players to create the game score table """
+    players = Player.objects.filter(lobby=lobbyId)
+    playersAndScore = []
+    for p in players:
+        playersAndScore.append({'username': p.user.username, 'score': p.score})
+    return playersAndScore
+
 def deactivateLobby(lobbyId):
+    """ after the game check if lobby exists and deactivate it """
     try:
         lobby = Lobby.objects.get(id=lobbyId)
     except:
@@ -79,6 +89,7 @@ def deactivateLobby(lobbyId):
     lobby.save()
 
 def checkWord(user, lobbyId, word, wordsList):
+    """ check if player typed the correct word, add points to player and return word """
     player = Player.objects.get(user=user, lobby=lobbyId)
     wordId = player.score
     if wordsList[wordId] == word:
@@ -89,12 +100,14 @@ def checkWord(user, lobbyId, word, wordsList):
         return [False, str(wordId)]
 
 def generateWords():
+    """ get random 200 words for whole players in lobby and return them """
     with open("E:\\praca\\django\\giera\\base\\words-base\\The Oxford 5000.txt", "r") as f:
         words = f.read()
     wordsList = random.choices(words.split('\n')[:-1], k=200)
     return wordsList
 
 def endGame(user, lobbId):
+    """ after the game reset player state and score """
     try:
         lobby = Lobby.objects.get(id=lobbId)
     except:
@@ -107,12 +120,14 @@ def endGame(user, lobbId):
         return lobby    
 
 
-# Lobby and Game functions
+## Lobby and Game functions
 def getLobby(lobbyId):
+    """ get lobby to check if it is active """
     lobby = Lobby.objects.get(id=lobbyId)
     return lobby
 
 def removePlayer(user, lobbyId):
+    """ remove player from lobby when he leaves """
     try:
         lobby = Lobby.objects.get(id=lobbyId)
     except:
@@ -122,6 +137,7 @@ def removePlayer(user, lobbyId):
         player.delete()
 
 def removeHost(user, lobbyId):
+    """ remove host from lobby when he leaves and give host to other player """
     user.host = None
     user.save()
     lobby = Lobby.objects.get(id=lobbyId)
@@ -137,5 +153,6 @@ def removeHost(user, lobbyId):
         lobby.delete()
 
 def updateUser(user):
+    """ after host change we update users to be sure who is new host"""
     user = User.objects.get(id=user.id)
     return user

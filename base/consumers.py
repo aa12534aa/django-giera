@@ -8,40 +8,39 @@ from .models import Lobby
 # Lobby handler
 class LobbyConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # get info about new player
         self.user = self.scope['user']
-        self.gameStarted = False
         await self.accept()
 
 
     async def receive(self, text_data):
-        self.lobbyId = json.loads(text_data).get('lobbyId')
-        value = json.loads(text_data).get('value')
+        # get lobby id and command sent from frontend
+        data = json.loads(text_data)
+        self.lobbyId = data.get('lobbyId')
+        value = data.get('value')
 
         if value == 'connecting':
+            # if player refreshed the page and is no longer in lobby, redirect him to home
             isPlayerInLobby = await database_sync_to_async(functions.isPlayerInLobby)(self.user, self.lobbyId)
             if not isPlayerInLobby:
                 await self.send(text_data=json.dumps(
                     {'type': 'kickPlayer'}
                 ))
             
+            # add this websocket connection to lobby group
             await self.channel_layer.group_add(
                 f'lobby{self.lobbyId}', self.channel_name
                 )
             
+            # notify all players in lobby to update player list
             await self.channel_layer.group_send(
                 f'lobby{self.lobbyId}',
                 {"type": "getAllPlayers"}
             )
 
-        elif value == 'startGame':
-            await self.channel_layer.group_send(
-                f'lobby{self.lobbyId}',
-                {'type': "startGame"}
-            )
-
         elif value == 'kickPlayer':
-            playerId = json.loads(text_data).get('playerId')
-            print(playerId, 'XDDD')
+            # when host kick player from lobby
+            playerId = data.get('playerId')
 
             await self.channel_layer.group_send(
                 f'lobby{self.lobbyId}',
@@ -51,9 +50,19 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+        elif value == 'startGame':
+            """ send players info to move from lobby to game """
+            await self.channel_layer.group_send(
+                f'lobby{self.lobbyId}',
+                {'type': "startGame"}
+            )
+
     async def getAllPlayers(self, event):
+        """ get all players from lobby and send them for each player on frontend """
         players, host = await database_sync_to_async(functions.getPlayers)(self.lobbyId)
         lobby = await database_sync_to_async(functions.getLobby)(self.lobbyId)
+
+        # inform new player if game is on and he has to wait
         if lobby.isActive:
             await self.send(text_data=json.dumps(
                 {'type': 'gameIsOn'}
@@ -72,21 +81,27 @@ class LobbyConsumer(AsyncWebsocketConsumer):
         ))
 
     async def kickPlayer(self, event):
+        """ kicking player by host """
         if event['playerId'] == self.user.id:
             await self.send(text_data=json.dumps(
                 {'type': 'kickPlayer'}
             ))
 
     async def startGame(self, event):
-        self.gameStarted = True
+        """ after start game change lobby and players to active """
+        await database_sync_to_async(functions.startGame)(self.user, self.lobbyId)
         await self.send(text_data=json.dumps(
             {"type": 'startGame'}
         ))
 
 
     async def disconnect(self, code):
-        if (self.user.host is not None) and (str(self.user.host) == self.lobbyId):
-            if not self.gameStarted:
+        # check if lobby is active
+        lobby = await database_sync_to_async(functions.getLobby)(self.lobbyId)
+
+        # if lobby is not active player left lobby otherwise game has started
+        if not lobby.isActive:
+            if (self.user.host is not None) and (str(self.user.host) == self.lobbyId):
                 newHostId = await database_sync_to_async(functions.removeHost)(self.user, self.lobbyId)
                 await self.channel_layer.group_send(
                     f'lobby{self.lobbyId}',
@@ -95,21 +110,23 @@ class LobbyConsumer(AsyncWebsocketConsumer):
                         'newHostId': newHostId
                     }
                 )
-        else:
-            if not self.gameStarted:
+
+            else:
                 await database_sync_to_async(functions.removePlayer)(self.user, self.lobbyId)
 
-        await self.channel_layer.group_send(
-            f'lobby{self.lobbyId}',
-            {'type': 'getAllPlayers'}
-        )
+            await self.channel_layer.group_send(
+                f'lobby{self.lobbyId}',
+                {'type': 'getAllPlayers'}
+            )
 
         await self.channel_layer.group_discard(
             f'lobby{self.lobbyId}', self.channel_name
         )
 
     async def newHost(self, event):
-        self.user = await database_sync_to_async(functions.updateUser)(self.user)
+        # if user became a host then update him
+        if self.user.id == event['newHostId']:
+            self.user = await database_sync_to_async(functions.updateUser)(self.user)
 
         await self.send(text_data=json.dumps(
             {
@@ -122,17 +139,21 @@ class LobbyConsumer(AsyncWebsocketConsumer):
 # Game handler
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # get info about player from lobby
         self.user = self.scope['user']
         await self.accept()
 
     async def receive(self, text_data):
-        self.lobbyId = json.loads(text_data).get('lobbyId')
-        value = json.loads(text_data).get('value')
+        # get lobby id and command sent from frontend
+        data = json.loads(text_data)
+        self.lobbyId = data.get('lobbyId')
+        value = data.get('value')
 
         if value == 'prepareGame':
-            await database_sync_to_async(functions.startGame)(self.user, self.lobbyId)
+            # get players and score to create score table
             playersAndScore = await database_sync_to_async(functions.getPlayersForGame)(self.lobbyId)
 
+            # add this websocket connection to game group
             await self.channel_layer.group_add(
                 f'game{self.lobbyId}', self.channel_name
             )
@@ -146,6 +167,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
         elif value == 'startTimer' and self.user.host is not None and str(self.user.host) == self.lobbyId:
+            # take words to send them on frontend
             self.wordsList = await database_sync_to_async(functions.generateWords)()
             await self.channel_layer.group_send(
                 f'game{self.lobbyId}',
@@ -154,12 +176,16 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'wordsList': self.wordsList
                 }
             )
+
+            # run timer asynchronously so websocket is not blocked
             asyncio.create_task(self.startTimer())
         
         elif value == 'playerWord':
-            word = json.loads(text_data).get('word')
+            word = data.get('word')
+            # check if the word typed by the player is correct
             isCorrect, wordId = await database_sync_to_async(functions.checkWord)(self.user, self.lobbyId, word, self.wordsList)
             if isCorrect:
+                # if correct send word info to frontend
                 await self.send(text_data=json.dumps(
                     {
                         'type': 'correctWord',
@@ -184,6 +210,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ))
 
     async def updateScoreTable(self, event):
+        """ inform other players about updated score """
         await self.send(text_data=json.dumps(
             {
                 'type': 'updateScoreTable',
@@ -192,6 +219,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ))
 
     async def prepareWords(self, event):
+        """ send words to the frontend """
         self.wordsList = event['wordsList']
         await self.send(text_data=json.dumps(
             {
@@ -201,6 +229,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ))
 
     async def startTimer(self):
+        """ send all players each second updated game time """
         gameTimer = 30
         while gameTimer > 0:
             await self.channel_layer.group_send(
@@ -213,6 +242,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             gameTimer -= 1
             await asyncio.sleep(1)
         
+        # after time passed end the game
         await database_sync_to_async(functions.deactivateLobby)(self.lobbyId)
         await self.channel_layer.group_send(
             f'game{self.lobbyId}',
@@ -228,6 +258,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ))
 
     async def endGame(self, event):
+        """ send players info to move from game to lobby """
         await self.send(text_data=json.dumps(
             {
                 'type': 'endGame',
@@ -237,9 +268,10 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     
     async def disconnect(self, code):
-        # Checking if player left game or game has ended
+        # check if lobby is active
         lobby = await database_sync_to_async(functions.getLobby)(self.lobbyId)
 
+        # if lobby is active the player left lobby during game otherwise game has ended
         if lobby is not None and not lobby.isActive:
             await database_sync_to_async(functions.endGame)(self.user, self.lobbyId)
 
@@ -258,4 +290,5 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
         
     async def newHost(self, event):
+        # if user became a host then update him
         self.user = await database_sync_to_async(functions.updateUser)(self.user)

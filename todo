@@ -34,7 +34,7 @@ do dodania:
 #-wyświetlanie listy lobby w home
 #-do wyświetlanych lobby w home możliwość dołączenia do niego
 #-kiedy użytkownik dołącza do aktywnego lobby, to pokazuje, że lobby jest aktywne
--komentarze do całego kodu
+#-komentarze do całego kodu
 -pole punktów gracza w home
 
 logika gry - gra polega na tym, że gracze mają jakieś słowa, i muszą ich jak najwięcej wpisać z klawiatury w danym czasie
@@ -47,6 +47,6 @@ do dodania:
 #-kolorownie poprawnie napisanego słowa na zielono
 #-wyświetlanie początkowej tabeli graczy z wynikami
 #-aktualizowani wyników graczy
--popraw, aby tabelka z wynikami, była wyżej
+#-popraw, aby tabelka z wynikami, była wyżej
 -host może wybierać czas trwania gry
 -po zakończeniu gracze przechodzą do podsumowania wyników
