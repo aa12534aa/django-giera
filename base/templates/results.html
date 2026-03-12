@@ -1,0 +1,27 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<body>
+    <div style="margin-left: 200px;">
+        <a href="{% url '' %}">Go Home</a>
+        <div style="display: flex;">
+            <h1>LobbyId: {{lobbyId}}</h1>
+
+            <div style="display: flex;">
+                <h2>Timer: </h2>
+                <h2 id="timer"></h2>
+            </div>
+        </div>
+
+        <h1>Results:</h1>
+        {% for player in players %}
+            <h2>{{player.user.username}} {{player.score}}</h2>
+        {% endfor %}
+    </div>
+    <script>
+        const lobbyId = "{{ lobbyId }}";
+        const players = "{{ players }}"
+    </script>
+    <script src="{% static 'results.js' %}"></script>
+</body>
+{% endblock %}

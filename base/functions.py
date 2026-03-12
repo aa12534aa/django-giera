@@ -31,6 +31,10 @@ def addPlayerToLobby(user, lobbyId):
     player, _ = Player.objects.get_or_create(user=user, lobby=lobby)
     return player
 
+def getScoreTable(lobbyId):
+    players = Player.objects.filter(lobby=lobbyId)
+    return players
+
 
 ## Lobby functions
 def isPlayerInLobby(user, lobbyId):
@@ -86,6 +90,7 @@ def deactivateLobby(lobbyId):
     except:
         return None
     lobby.isActive = False
+    lobby.results = True
     lobby.save()
 
 def checkWord(user, lobbyId, word, wordsList):
@@ -156,3 +161,15 @@ def updateUser(user):
     """ after host change we update users to be sure who is new host"""
     user = User.objects.get(id=user.id)
     return user
+
+
+## Results
+def endResults(lobbyId):
+    lobby = Lobby.objects.get(id=lobbyId)
+    lobby.results = False
+    lobby.save()
+
+def backToLobby(user, lobbyId):
+    player = Player.objects.get(user=user, lobby=lobbyId)
+    player.score = 0
+    player.save()

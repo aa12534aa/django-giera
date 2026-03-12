@@ -3,9 +3,8 @@ from channels.db import database_sync_to_async
 from . import functions
 import json
 import asyncio
-from .models import Lobby
 
-# Lobby handler
+# lobby handler
 class LobbyConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # get info about new player
@@ -136,7 +135,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
         ))
 
 
-# Game handler
+# game handler
 class GameConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # get info about player from lobby
@@ -292,3 +291,82 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def newHost(self, event):
         # if user became a host then update him
         self.user = await database_sync_to_async(functions.updateUser)(self.user)
+
+# results handler
+class ResultsConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        # get player info
+        self.user = self.scope['user']
+        await self.accept()
+
+    async def receive(self, text_data):
+        self.lobbyId = json.loads(text_data).get('lobbyId')
+        print(self.lobbyId)
+
+        await self.channel_layer.group_add(
+            f'results{self.lobbyId}', self.channel_name
+            )
+
+        if self.user.host is not None and str(self.user.host) == self.lobbyId:
+            asyncio.create_task(self.startTimer())
+
+    async def startTimer(self):
+        """ send all players each second updated results time """
+        resultsTimer = 10
+        while resultsTimer > 0:
+            await self.channel_layer.group_send(
+                f'results{self.lobbyId}',
+                {
+                    'type': 'sendTime',
+                    'resultsTimer': resultsTimer
+                }
+            )
+            resultsTimer -= 1
+            await asyncio.sleep(1)
+
+        await database_sync_to_async(functions.endResults)(self.lobbyId)
+
+        await self.channel_layer.group_send(
+            f'results{self.lobbyId}',
+            {'type': 'backToLobby'}
+        )
+
+    async def sendTime(self, event):
+        await self.send(text_data=json.dumps(
+            {
+                'type': 'timer',
+                'time': event['resultsTimer']
+            }
+        ))
+
+    async def backToLobby(self, event):
+        await self.send(text_data=json.dumps(
+            {
+                'type': 'backToLobby',
+                'lobbyId': self.lobbyId  
+            }
+        ))
+
+    async def disconnect(self, code):
+        # check if lobby is active
+        lobby = await database_sync_to_async(functions.getLobby)(self.lobbyId)
+
+        # if resutls is True the player left lobby during results otherwise game has ended
+        if lobby.results:
+            print(self.user)
+            if self.user.host is not None and str(self.user.host) == self.lobbyId:
+                await database_sync_to_async(functions.removeHost)(self.user, self.lobbyId)
+                await self.channel_layer.group_send(
+                    f'game{self.lobbyId}',
+                    {'type': 'newHost'}
+                )
+
+            else:
+                await database_sync_to_async(functions.removePlayer)(self.user, self.lobbyId)
+        else:
+            await database_sync_to_async(functions.backToLobby)(self.user, self.lobbyId)
+
+        await self.channel_layer.group_discard(
+                f'game{self.lobbyId}', self.channel_name
+            )
+        

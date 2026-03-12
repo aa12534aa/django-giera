@@ -73,3 +73,8 @@ def joinLobby(request, lobbyId):
 def startGame(request, lobbyId):
     context = {'lobbyId': lobbyId}
     return render(request, 'game.html', context)
+
+def results(request, lobbyId):
+    players = functions.getScoreTable(lobbyId)
+    context = {'lobbyId': lobbyId, 'players': players}
+    return render(request, 'results.html', context)
