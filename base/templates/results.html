@@ -14,13 +14,13 @@
         </div>
 
         <h1>Results:</h1>
-        {% for player in players %}
-            <h2>{{player.user.username}} {{player.score}}</h2>
-        {% endfor %}
+        <div id="scoreTable"></div>
     </div>
+    {{ lobbyId|json_script:"lobby-id" }}
+    {{ players|json_script:"players-data" }}
     <script>
-        const lobbyId = "{{ lobbyId }}";
-        const players = "{{ players }}"
+        const lobbyId = JSON.parse(document.getElementById('lobby-id').textContent);
+        const players = JSON.parse(document.getElementById('players-data').textContent);
     </script>
     <script src="{% static 'results.js' %}"></script>
 </body>

@@ -33,7 +33,10 @@ def addPlayerToLobby(user, lobbyId):
 
 def getScoreTable(lobbyId):
     players = Player.objects.filter(lobby=lobbyId)
-    return players
+    results = []
+    for player in players:
+        results.append({'username': player.user.username, 'score': player.score})
+    return results
 
 
 ## Lobby functions
@@ -73,8 +76,17 @@ def startGame(user, lobbyId):
         lobby.isActive = True
         lobby.save()
 
+def setLobbyTime(lobbyId, gameTime):
+    lobby = Lobby.objects.get(id=lobbyId)
+    lobby.time = gameTime
+    lobby.save()
+
 
 ## Game functions
+def getLobbyTime(lobbyId):
+    lobby = Lobby.objects.get(id=lobbyId)
+    return lobby.time
+
 def getPlayersForGame(lobbyId):
     """ get players to create the game score table """
     players = Player.objects.filter(lobby=lobbyId)

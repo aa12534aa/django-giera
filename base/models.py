@@ -16,6 +16,7 @@ class User(AbstractUser):
 class Lobby(models.Model):
     isActive = models.BooleanField(default=False)
     results = models.BooleanField(default=False)
+    time = models.IntegerField(default=30)
     
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -50,7 +50,9 @@ class LobbyConsumer(AsyncWebsocketConsumer):
             )
 
         elif value == 'startGame':
-            """ send players info to move from lobby to game """
+            """ send players info to move from lobby to game and set game time"""
+            gameTime = data.get('time')
+            await database_sync_to_async(functions.setLobbyTime)(self.lobbyId, gameTime)
             await self.channel_layer.group_send(
                 f'lobby{self.lobbyId}',
                 {'type': "startGame"}
@@ -229,7 +231,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def startTimer(self):
         """ send all players each second updated game time """
-        gameTimer = 30
+        gameTimer = await database_sync_to_async(functions.getLobbyTime)(self.lobbyId)
         while gameTimer > 0:
             await self.channel_layer.group_send(
                 f'game{self.lobbyId}',

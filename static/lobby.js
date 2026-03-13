@@ -84,17 +84,35 @@ socket.onerror = function(err) {
 function showStartButton() {
     if (document.getElementById('startGame')) return;
 
+    const controls = document.getElementById('controls');
+
+    const timeSelection = document.createElement('select');
+    timeSelection.id = 'timeSelection';
+
+    [30, 60, 90].forEach(time => {
+        const option = document.createElement('option');
+        option.value = time;
+        option.textContent = time + " s";
+        timeSelection.appendChild(option);
+    });
+
     const btn = document.createElement('button');
     btn.id = 'startGame';
     btn.innerText = 'Start Game';
 
     btn.onclick = function() {
-        console.log('startGame');
+
+        const selectedTime = document.getElementById('timeSelection').value;
+
+        console.log('startGame', selectedTime);
+
         socket.send(JSON.stringify({
             value: 'startGame',
-            lobbyId: lobbyId
+            lobbyId: lobbyId,
+            time: selectedTime
         }));
     };
 
-    document.getElementById('controls').appendChild(btn);
+    controls.appendChild(timeSelection);
+    controls.appendChild(btn);
 }

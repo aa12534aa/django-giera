@@ -49,5 +49,5 @@ do dodania:
 #-popraw, aby tabelka z wynikami, była wyżej
 #-stonę z podsumowaniem wyników po grze
 #-po zakończeniu gracze przechodzą do podsumowania wyników
--wyniki pokazują miejsa od 1 do n wraz z punktami gracza
--host może wybierać czas trwania gry
+#-wyniki pokazują miejsa od 1 do n wraz z punktami gracza
+#-host może wybierać czas trwania gry

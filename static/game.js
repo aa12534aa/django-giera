@@ -16,7 +16,6 @@ socket.onmessage = function(e) {
         const scoreTable = document.getElementById('scoreTable');
         scoreTable.innerHTML = '';
         data.playersAndScore.forEach(player => {
-            console.log(player)
             const row = document.createElement("div");
             row.style.display = "flex";
             row.style.gap = "10px";
