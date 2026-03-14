@@ -36,6 +36,7 @@ do dodania:
 #-kiedy użytkownik dołącza do aktywnego lobby, to pokazuje, że lobby jest aktywne
 #-komentarze do całego kodu
 
+
 logika gry - gra polega na tym, że gracze mają jakieś słowa, i muszą ich jak najwięcej wpisać z klawiatury w danym czasie
 do dodania:
 #-pobranie listy słów możliwych do wyświetlenia
@@ -51,3 +52,12 @@ do dodania:
 #-po zakończeniu gracze przechodzą do podsumowania wyników
 #-wyniki pokazują miejsa od 1 do n wraz z punktami gracza
 #-host może wybierać czas trwania gry
+# -przy refreshu strony wyrzuca gracza z game
+# -przy refreshu strony wyrzuca gracza z results
+
+
+testy
+do dodania:
+#-home page
+-logowanie, rejestracja, logout
+-tworzenie lobby, dołączanie do lobby

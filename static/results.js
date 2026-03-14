@@ -13,6 +13,8 @@ socket.onmessage = function(e) {
         document.getElementById('timer').innerHTML = data.time;
     } else if (data.type === 'backToLobby') {
         window.location.href = `http://127.0.0.1:8000/lobby/${data.lobbyId.toString()}`;
+    } else if (data.type === 'kickPlayer') {
+        window.location.href = `http://127.0.0.1:8000`;
     }
 }
 

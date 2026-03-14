@@ -13,9 +13,9 @@ def createLobby(user):
 def lobbyExists(lobbyId):
     """ check if lobby with given ID exists """
     try:
-        Lobby.objects.get(id=lobbyId)
-        return True
-    except Lobby.DoesNotExists:
+        lobby = Lobby.objects.get(id=lobbyId)
+        return lobby
+    except Lobby.DoesNotExist:
         return False
 
 def getAllLobbies():
@@ -27,9 +27,12 @@ def getAllLobbies():
     return lobbyList
 
 def addPlayerToLobby(user, lobbyId):
-    lobby = Lobby.objects.get(id=lobbyId)
-    player, _ = Player.objects.get_or_create(user=user, lobby=lobby)
-    return player
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        player, _ = Player.objects.get_or_create(user=user, lobby=lobby)
+        return player
+    else:
+        return None
 
 def getScoreTable(lobbyId):
     players = Player.objects.filter(lobby=lobbyId)
@@ -68,24 +71,29 @@ def getPlayers(lobbyId):
 
 def startGame(user, lobbyId):
     """ start game and change lobby and players states to active (all players use this function) """
-    lobby = Lobby.objects.get(id=lobbyId)
-    player = Player.objects.get(user=user, lobby=lobby)
-    player.isPlaying = True
-    player.save()
-    if not lobby.isActive:
-        lobby.isActive = True
-        lobby.save()
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        player = Player.objects.get(user=user, lobby=lobby)
+        player.isPlaying = True
+        player.save()
+        if not lobby.isActive:
+            lobby.isActive = True
+            lobby.save()
 
 def setLobbyTime(lobbyId, gameTime):
-    lobby = Lobby.objects.get(id=lobbyId)
-    lobby.time = gameTime
-    lobby.save()
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        lobby.time = gameTime
+        lobby.save()
 
 
 ## Game functions
 def getLobbyTime(lobbyId):
-    lobby = Lobby.objects.get(id=lobbyId)
-    return lobby.time
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        return lobby.time
+    else:
+        return 0
 
 def getPlayersForGame(lobbyId):
     """ get players to create the game score table """
@@ -97,13 +105,11 @@ def getPlayersForGame(lobbyId):
 
 def deactivateLobby(lobbyId):
     """ after the game check if lobby exists and deactivate it """
-    try:
-        lobby = Lobby.objects.get(id=lobbyId)
-    except:
-        return None
-    lobby.isActive = False
-    lobby.results = True
-    lobby.save()
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        lobby.isActive = False
+        lobby.results = True
+        lobby.save()
 
 def checkWord(user, lobbyId, word, wordsList):
     """ check if player typed the correct word, add points to player and return word """
@@ -123,51 +129,50 @@ def generateWords():
     wordsList = random.choices(words.split('\n')[:-1], k=200)
     return wordsList
 
-def endGame(user, lobbId):
+def endGame(user, lobbyId):
     """ after the game reset player state and score """
-    try:
-        lobby = Lobby.objects.get(id=lobbId)
-    except:
-        lobby = None
-    if lobby is not None:
+    lobby = lobbyExists(lobbyId)
+    if lobby:
         player = Player.objects.get(user=user, lobby=lobby)
         player.isPlaying = False
         player.score = 0
         player.save()
-        return lobby    
+        return lobby
+    else:
+        return None
 
 
 ## Lobby and Game functions
 def getLobby(lobbyId):
     """ get lobby to check if it is active """
-    lobby = Lobby.objects.get(id=lobbyId)
-    return lobby
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        return lobby
+    else:
+        return None
 
 def removePlayer(user, lobbyId):
     """ remove player from lobby when he leaves """
-    try:
-        lobby = Lobby.objects.get(id=lobbyId)
-    except:
-        lobby = None
-    if lobby is not None:
-        player = Player.objects.get(user=user, lobby=lobby)
+    if isPlayerInLobby(user, lobbyId):
+        player = Player.objects.get(user=user, lobby=lobbyId)
         player.delete()
 
 def removeHost(user, lobbyId):
     """ remove host from lobby when he leaves and give host to other player """
-    user.host = None
-    user.save()
-    lobby = Lobby.objects.get(id=lobbyId)
-    player = Player.objects.get(user=user, lobby=lobby)
-    player.delete()
-    players = Player.objects.filter(lobby=lobby)
-    if len(players) > 0:
-        newHost = User.objects.get(id=players[0].user.id)
-        newHost.host = lobbyId
-        newHost.save()
-        return newHost.id
-    else:
-        lobby.delete()
+    if isPlayerInLobby(user, lobbyId):
+        user.host = None
+        user.save()
+        player = Player.objects.get(user=user, lobby=lobbyId)
+        player.delete()
+        players = Player.objects.filter(lobby=lobbyId)
+        if len(players) > 0:
+            newHost = User.objects.get(id=players[0].user.id)
+            newHost.host = lobbyId
+            newHost.save()
+            return newHost.id
+        else:
+            lobby = Lobby.objects.get(id=lobbyId)
+            lobby.delete()
 
 def updateUser(user):
     """ after host change we update users to be sure who is new host"""
@@ -177,9 +182,11 @@ def updateUser(user):
 
 ## Results
 def endResults(lobbyId):
-    lobby = Lobby.objects.get(id=lobbyId)
-    lobby.results = False
-    lobby.save()
+    lobby = lobbyExists(lobbyId)
+    if lobby:
+        lobby = Lobby.objects.get(id=lobbyId)
+        lobby.results = False
+        lobby.save()
 
 def backToLobby(user, lobbyId):
     player = Player.objects.get(user=user, lobby=lobbyId)

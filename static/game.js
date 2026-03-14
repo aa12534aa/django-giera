@@ -56,6 +56,8 @@ socket.onmessage = function(e) {
         element.style.color = 'green';
     } else if (data.type === 'endGame') {
         window.location.href = `http://127.0.0.1:8000/results/${data.lobbyId.toString()}`;
+    } else if (data.type === 'kickPlayer') {
+        window.location.href = `http://127.0.0.1:8000`;
     }
 }
 
