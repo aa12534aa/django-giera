@@ -4,9 +4,9 @@ from . import views
 urlpatterns = [
     path('', views.home, name=''),
 
-    path('login-page', views.loginPage, name='login-page'),
-    path('logout-page', views.logoutPage, name='logout-page'),
-    path('regiser-page', views.registerPage, name='register-page'),
+    path('login-page/', views.loginPage, name='login-page'),
+    path('logout-page/', views.logoutPage, name='logout-page'),
+    path('register-page/', views.registerPage, name='register-page'),
 
     path('lobby/<str:lobbyId>', views.joinLobby, name='join-lobby'),
     path('lobby/', views.createLobby, name='create-lobby'),

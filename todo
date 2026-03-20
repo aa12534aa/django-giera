@@ -59,5 +59,7 @@ do dodania:
 testy
 do dodania:
 #-home page
--logowanie, rejestracja, logout
--tworzenie lobby, dołączanie do lobby
+#-modeli User, Lobby, Player
+#-viewsow homePaga
+-logowania, rejestracji, logoutu
+-viewsow tworzenie lobby, dołączanie do lobby

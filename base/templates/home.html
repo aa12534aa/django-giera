@@ -26,6 +26,10 @@
         <div>isActive: {{lobby.isActive}}</div>
         <a href="{% url 'join-lobby' lobby.id %}">Join Lobby</a>
     </div>
+    {% empty %}
+        <div style="display: flex; justify-content: space-between; width: 500px; border: solid 1px;">
+            <div>There is no lobby here</div>
+        </div>
     {% endfor %}
 
     <script>
