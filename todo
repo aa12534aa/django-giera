@@ -61,5 +61,5 @@ do dodania:
 #-home page
 #-modeli User, Lobby, Player
 #-viewsow homePaga
--logowania, rejestracji, logoutu
--viewsow tworzenie lobby, dołączanie do lobby
+#-viewsow logowania, rejestracji, logoutu
+#-viewsow tworzenie lobby, dołączanie do lobby
