@@ -56,6 +56,7 @@ class RegisterLoginLogoutPageTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertTrue('_auth_user_id' in self.client.session)
         self.assertIn('', response.url)
+        self.assertTrue(User.objects.get(username='john123'))
 
     def testLogoutWithoutLogin(self):
         response = self.client.get("/logout-page/")

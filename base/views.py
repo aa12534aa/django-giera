@@ -71,8 +71,26 @@ def joinLobby(request, lobbyId):
         return redirect('')
     
 def startGame(request, lobbyId):
-    context = {'lobbyId': lobbyId}
-    return render(request, 'game.html', context)
+    lobby = functions.getLobby(lobbyId)
+    if str(request.user.host) == lobbyId:
+        if lobby.isActive:
+            context = {'lobbyId': lobbyId}
+            return render(request, 'game.html', context)
+        else:
+            messages.error(request, "you can't start the game like this")
+            return redirect('')
+    else:
+        messages.error(request, 'only host can start the game')
+        return redirect('')
+
+def joinGame(request, lobbyId):
+    lobby = functions.getLobby(lobbyId)
+    if str(lobby.id) == lobbyId and lobby.isActive:
+        context = {'lobbyId': lobbyId}
+        return render(request, 'game.html', context)
+    else:
+        messages.error(request, 'lobby doesnt exist or is inactive')
+        return redirect('')
 
 def results(request, lobbyId):
     players = functions.getScoreTable(lobbyId)

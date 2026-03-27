@@ -58,12 +58,17 @@ socket.onmessage = function(e) {
             });
         }
     } else if (data.type === 'startGame') {
-        window.location.href = `http://127.0.0.1:8000/game/${lobbyId.toString()}`;
+        if (isHost === lobbyId) {
+            window.location.href = `http://127.0.0.1:8000/game/${lobbyId.toString()}`;
+        } else {
+            window.location.href = `http://127.0.0.1:8000/join-game/${lobbyId.toString()}`;
+        }
     } else if (data.type === 'kickPlayer') {
         window.location.href = 'http://127.0.0.1:8000/';
     } else if (data.type === 'newHost') {
         if (data.newHostId === parseInt(userId)) {
             showStartButton();
+            isHost = lobbyId
         }
     } else if (data.type === 'gameIsOn') {
         document.getElementById('isGameOn').innerText = 'Game is on, wait till the end';

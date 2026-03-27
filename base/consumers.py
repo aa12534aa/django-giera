@@ -102,7 +102,7 @@ class LobbyConsumer(AsyncWebsocketConsumer):
         if lobby is not None:
             # if lobby is not active player left lobby otherwise game has started
             if not lobby.isActive:
-                if (self.user.host is not None) and (str(self.user.host) == self.lobbyId):
+                if (self.user.host is not None) and (str(self.user.host) == str(self.lobbyId)):
                     newHostId = await database_sync_to_async(functions.removeHost)(self.user, self.lobbyId)
                     await self.channel_layer.group_send(
                         f'lobby{self.lobbyId}',

@@ -63,3 +63,5 @@ do dodania:
 #-viewsow homePaga
 #-viewsow logowania, rejestracji, logoutu
 #-viewsow tworzenie lobby, dołączanie do lobby
+#-websocket dołączanie do lobby
+  -websocket start gry

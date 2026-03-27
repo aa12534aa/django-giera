@@ -61,7 +61,7 @@ def getPlayers(lobbyId):
     host = None
     for p in players:
         # host
-        if p.user.host is not None and str(p.user.host) == lobbyId:
+        if p.user.host is not None and str(p.user.host) == str(lobbyId):
             playersArray.append({'username': p.user.username, 'id': p.user.id, 'isHost': True})
             host = p.user.id
         # normal player
@@ -169,7 +169,6 @@ def removeHost(user, lobbyId):
             newHost = User.objects.get(id=players[0].user.id)
             newHost.host = lobbyId
             newHost.save()
-            return newHost.id
         else:
             lobby = Lobby.objects.get(id=lobbyId)
             lobby.delete()
